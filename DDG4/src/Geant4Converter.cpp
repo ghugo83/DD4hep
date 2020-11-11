@@ -1568,6 +1568,7 @@ namespace  {
 
 /// Create geometry conversion
 Geant4Converter& Geant4Converter::create(DetElement top) {
+  std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! GABIE local dd4HEP, Geant4Converter::create(DetElement top)" << std::endl;
   Geant4GeometryInfo& geo = this->init();
   World wrld = top.world();
   m_data->clear();
