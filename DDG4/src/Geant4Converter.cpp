@@ -1620,6 +1620,6 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
 
   geo.setWorld(top.placement().ptr());
   geo.valid = true;
-  printout(INFO, "Geant4Converter", "+++  Successfully converted geometry to Geant4.");
+  printout(INFO, "MODIFIED!!!!!!!!! Geant4Converter", "+++  Successfully converted geometry to Geant4.");
   return *this;
 }
