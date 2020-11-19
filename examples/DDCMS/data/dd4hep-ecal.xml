@@ -51,7 +51,7 @@
   </display>
 
   <plugin name="DD4hep_XMLLoader">
-    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/cms_ecal.xml"/>
+    <arg value="file:${DD4hepExamplesINSTALL}/examples/DDCMS/data/cms_ecalEndcap.xml"/>
   </plugin>
   <plugin name="DD4hep_PlacedVolumeProcessor">
     <arg value="-recursive"/>
