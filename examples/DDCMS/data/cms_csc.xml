@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<DDDefinition>
+  <IncludeSection>
+    <Include ref="cmsextent.xml"/>
+    <Include ref="cavernData.xml"/>
+    <Include ref="cms.xml"/>
+    <Include ref='muonBase.xml'/>
+    <Include ref='mf.xml'/>
+    <Include ref='csc.xml'/>  
+  </IncludeSection>
+  
+  
+  <PosPartSection label="">
+    <PosPart copyNumber="1">
+      <!--<rParent name="world_volume"/>-->
+      <rParent name="world_volume"/>
+      <rChild name="muonBase:MUON"/>
+    </PosPart>
+  </PosPartSection>
+
+  
+</DDDefinition>

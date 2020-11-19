@@ -62,7 +62,7 @@ static Handle<TObject> create_Polycone(Detector&, xml_h element)   {
   double start = e.startphi(0e0), deltaphi = e.deltaphi(2*M_PI);
   for(xml_coll_t c(e,_U(zplane)); c; ++c, ++num)  {
     xml_comp_t plane(c);
-    rmin.emplace_back(plane.rmin());
+    rmin.emplace_back(plane.rmin(0.0));
     rmax.emplace_back(plane.rmax());
     z.emplace_back(plane.z());
   }
@@ -76,19 +76,35 @@ static Handle<TObject> create_Polycone(Detector&, xml_h element)   {
 DECLARE_XML_SHAPE(Polycone__shape_constructor,create_Polycone)
 
 static Handle<TObject> create_ConeSegment(Detector&, xml_h element)   {
+  Solid solid;
   xml_dim_t e(element);
-  Solid solid = ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),e.phi1(0.0),e.phi2(2*M_PI));
+  xml_attr_t aphi = element.attr_nothrow(_U(phi1));
+  xml_attr_t bphi = element.attr_nothrow(_U(phi2));
+  if ( aphi || bphi )  {
+    double phi1 = e.phi1(0.0);
+    double phi2 = e.phi2(2*M_PI);
+    /// Old naming: angles from [phi1,phi2]
+    solid = ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),phi1,phi2);
+  }
+  else  {
+    double start_phi = e.startphi(0.0);
+    double delta_phi = e.deltaphi(2*M_PI);
+    while ( start_phi > 2.0*M_PI ) start_phi -= 2.0*M_PI;
+    /// New naming: angles from [startphi,startphi+deltaphi]
+    solid = ConeSegment(e.dz(),e.rmin1(0.0),e.rmax1(),e.rmin2(0.0),e.rmax2(),start_phi,start_phi+delta_phi);
+  }
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }
 DECLARE_XML_SHAPE(ConeSegment__shape_constructor,create_ConeSegment)
 
 static Handle<TObject> create_Tube(Detector&, xml_h element)   {
-  xml_dim_t e(element);
   Solid solid;
+  xml_dim_t e(element);
   xml_attr_t aphi = element.attr_nothrow(_U(phi1));
-  if ( aphi )  {
-    double phi1 = e.phi1();
+  xml_attr_t bphi = element.attr_nothrow(_U(phi2));
+  if ( aphi || bphi )  {
+    double phi1 = e.phi1(0.0);
     double phi2 = e.phi2(2*M_PI);
     solid = Tube(e.rmin(0.0),e.rmax(),e.dz(0.0),phi1, phi2);
   }
@@ -216,8 +232,23 @@ DECLARE_XML_SHAPE(Trapezoid__shape_constructor,create_Trd2)
 DECLARE_XML_SHAPE(Trd2__shape_constructor,create_Trd2)
 
 static Handle<TObject> create_Torus(Detector&, xml_h element)   {
-  xml_dim_t e(element);
-  Solid solid = Torus(e.r(),e.rmin(),e.rmax(),e.phi(M_PI),e.deltaphi(2.*M_PI));
+  Solid      solid;
+  xml_dim_t  e(element);
+  xml_attr_t aphi = element.attr_nothrow(_U(phi1));
+  xml_attr_t bphi = element.attr_nothrow(_U(phi2));
+  if ( aphi || bphi )  {
+    double phi1 = e.phi1(0.0);
+    double phi2 = e.phi2(2*M_PI);
+    /// Old naming: angles from [phi1,phi2]
+    solid = Torus(e.r(), e.rmin(0.0), e.rmax(), phi1, phi2-phi1);
+  }
+  else  {
+    double start_phi = e.startphi(0.0);
+    double delta_phi = e.deltaphi(2*M_PI);
+    while ( start_phi > 2.0*M_PI ) start_phi -= 2.0*M_PI;
+    /// TGeo naming: angles from [startphi,startphi+deltaphi]
+    solid = Torus(e.r(), e.rmin(0.0), e.rmax(), start_phi, delta_phi);
+  }
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }
@@ -263,7 +294,7 @@ static Handle<TObject> create_Sphere(Detector&, xml_h element)   {
   else if ( e.hasAttr(_U(deltatheta)) )
     endtheta = starttheta + e.deltatheta();
 
-  Solid solid = Sphere(e.rmin(), e.rmax(), starttheta, endtheta, startphi, endphi);
+  Solid solid = Sphere(e.rmin(0e0), e.rmax(), starttheta, endtheta, startphi, endphi);
   if ( e.hasAttr(_U(name)) ) solid->SetName(e.attr<string>(_U(name)).c_str());
   return solid;
 }

@@ -283,14 +283,14 @@ void ReflectionBuilder::execute()  const   {
   bool print_active = isActivePrintLevel(DEBUG);
   TGeoNode *node;
   while ( (node=next()) ) {
-    TGeoMatrix* m = node->GetMatrix();
-    if (m->IsReflection()) {
+    TGeoMatrix* matrix = node->GetMatrix();
+    if (matrix->IsReflection()) {
       if ( print_active )  {
 	printout(INFO,"ReflectionBuilder","Reflection matrix:");
-	m->Print();
+	matrix->Print();
       }
       Volume vol(node->GetVolume());
-      TGeoMatrix* mclone = new TGeoCombiTrans(*m);
+      TGeoMatrix* mclone = new TGeoCombiTrans(*matrix);
       mclone->RegisterYourself();
       // Reflect just the rotation component
       mclone->ReflectZ(kFALSE, kTRUE);
@@ -301,7 +301,7 @@ void ReflectionBuilder::execute()  const   {
       TGeoNodeMatrix* nodematrix = (TGeoNodeMatrix*)node;
       nodematrix->SetMatrix(mclone);
       if ( print_active )  {
-	printout(INFO,"ReflectionBuilder","Reflected volume: %s ",vol.name());
+	printout(INFO,"ReflectionBuilder","Reflected volume: %s ", vol.name());
       }
       Volume refl = vol.reflect(vol.sensitiveDetector());
       node->SetVolume(refl.ptr());
@@ -815,37 +815,29 @@ Material Volume::material() const {
 const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
   if ( attr.isValid() ) {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
-    Color_t bright = vis->color;//kBlue;//TColor::GetColorBright(vis->color);
-    Color_t dark = vis->color;//kRed;//TColor::GetColorDark(vis->color);
-    TColor* c = vis->col;//gROOT->GetColor(dark);
+    TColor* col = vis->color;
     int draw_style = vis->drawingStyle;
     int line_style = vis->lineStyle;
-
+    int col_num    = col->GetNumber();
+    int col_tr_num = vis->colortr->GetNumber();
     m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
     m_element->SetVisContainers(kTRUE);
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
     printout(DEBUG,"setVisAttributes",
-             "Set color %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
-             int(vis->color),
-             c ? int(255*c->GetRed()) : 0xFF,
-             c ? int(255*c->GetGreen()) : 0xFF,
-             c ? int(255*c->GetBlue()) : 0xFF,
+             "Set color %3d transparent(alpha:%.3f): %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
+             col_num, vis->alpha, col_tr_num,
+             col ? int(255*col->GetRed())   : 0xFF,
+             col ? int(255*col->GetGreen()) : 0xFF,
+             col ? int(255*col->GetBlue())  : 0xFF,
              draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
              line_style == VisAttr::SOLID ? "Solid" : "Dashed",
              name()
              );
     m_element->SetLineWidth(10);
-    m_element->SetLineColor(dark);
+    m_element->SetLineColor(col_num);
+    m_element->SetFillColor(col_tr_num);
     if (draw_style == VisAttr::SOLID) {
-      m_element->SetLineColor(bright);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5,34,25)
-      m_element->SetFillColorAlpha(bright,vis->alpha);
-#else
-      m_element->SetFillColor(bright);
-#endif
       m_element->SetFillStyle(1001);   // Root: solid
-      // Suggested by Nikiforos. Not optimal.
-      //m_element->GetMedium()->GetMaterial()->SetTransparency((1-vis->alpha)*100);
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
       // As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
@@ -854,7 +846,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
       // a transparency>50 will make a volume invisible in the normal pad.
       // Hence: possibly restrict transparency to a maximum of 50.
       //        but let's see first how this behaves.
-      m_element->SetTransparency((1-vis->alpha)*100);
+      m_element->SetTransparency((1.0-vis->alpha)*100);
 #endif
     }
     else {
@@ -869,24 +861,6 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
       m_element->SetLineStyle(2);
     else
       m_element->SetLineStyle(line_style);
-
-
-    /*
-      m_element->SetVisibility(kTRUE);
-      m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
-      m_element->SetVisDaughters(kTRUE);
-      printout(INFO,"setVisAttributes","Set Line color for volume %s",name());
-      m_element->SetLineColor(bright);
-      m_element->SetFillColor(bright);
-      m_element->SetFillStyle(1001);   // Root: solid
-      if (line_style == VisAttr::SOLID)
-      m_element->SetFillStyle(1);
-      else if (line_style == VisAttr::DASHED)
-      m_element->SetFillStyle(2);
-      else
-      m_element->SetFillStyle(line_style);
-      m_element->SetLineWidth(10);
-    */
   }
   Volume::Object* o = _userExtension(*this);
   if ( o ) o->vis = attr;
@@ -898,19 +872,6 @@ const Volume& Volume::setVisAttributes(const Detector& description, const string
   if (!nam.empty()) {
     VisAttr attr = description.visAttributes(nam);
     setVisAttributes(attr);
-  }
-  else {
-    /*
-      string tag = this->name();
-      if ( ::strstr(tag.c_str(),"_slice") )       // Slices turned off by default
-      setVisAttributes(description.visAttributes("InvisibleNoDaughters"));
-      else if ( ::strstr(tag.c_str(),"_layer") )  // Layers turned off, but daughters possibly visible
-      setVisAttributes(description.visAttributes("InvisibleWithDaughters"));
-      else if ( ::strstr(tag.c_str(),"_module") ) // Tracker modules similar to layers
-      setVisAttributes(description.visAttributes("InvisibleWithDaughters"));
-      else if ( ::strstr(tag.c_str(),"_module_component") ) // Tracker modules similar to layers
-      setVisAttributes(description.visAttributes("InvisibleNoDaughters"));
-    */
   }
   return *this;
 }
@@ -928,8 +889,7 @@ const Volume& Volume::setAttributes(const Detector& description, const string& r
 /// Access the visualisation attributes
 VisAttr Volume::visAttributes() const {
   Object* o = _data(*this, false);
-  if (o)
-    return o->vis;
+  if (o) return o->vis;
   return VisAttr();
 }
 

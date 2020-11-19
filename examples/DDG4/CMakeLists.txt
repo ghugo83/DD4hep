@@ -22,7 +22,7 @@ dd4hep_set_compiler_flags()
 
 set(DDG4examples_INSTALL  ${CMAKE_INSTALL_PREFIX}/examples/DDG4)
 #
-#---Geant4 Testsing-----------------------------------------------------------------
+#---Geant4 Testing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
   #----  Dictionary of classes to be written to the ROOT file   --------------------
@@ -30,7 +30,7 @@ if (DD4HEP_USE_GEANT4)
   SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/Dictionary.h
   LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
   DEFINITIONS DD4HEP_DICTIONARY_MODE
-  OPTIONS -rmf=${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap -rml=libDDG4UserLib.so
+  OPTIONS -rmf ${LIBRARY_OUTPUT_PATH}/G__DDG4UserDict.rootmap -rml libDDG4UserLib.so
   OUTPUT ${LIBRARY_OUTPUT_PATH}
   )
   #----  Example of a client library with user defined plugins  --------------------
@@ -50,14 +50,14 @@ if (DD4HEP_USE_GEANT4)
   # Test HepMC input reader
   dd4hep_add_test_reg( DDG4_HepMC_reader
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
-    EXEC_ARGS  python ${DD4hep_DIR}/examples/DDG4/examples/readHEPMC.py
+    EXEC_ARGS  python ${DD4hep_ROOT}/examples/DDG4/examples/readHEPMC.py
                       ${DDG4examples_INSTALL}/data/hepmc_geant4.dat
     REGEX_PASS "Geant4InputAction\\[Input\\]: Event 10 Error when moving to event -  EOF")
   #
   # Test HepMC input reader with slightly non-standard HEPMC file
   dd4hep_add_test_reg( DDG4_HepMC_reader_minbias
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDG4.sh"
-    EXEC_ARGS  python ${DD4hep_DIR}/examples/DDG4/examples/readHEPMC.py
+    EXEC_ARGS  python ${DD4hep_ROOT}/examples/DDG4/examples/readHEPMC.py
                       ${DDG4examples_INSTALL}/data/LHCb_MinBias_HepMC.txt
     REGEX_PASS "Geant4InputAction\\[Input\\]: Event 27 Error when moving to event -  EOF")
 endif()
