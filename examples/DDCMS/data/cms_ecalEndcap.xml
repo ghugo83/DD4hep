@@ -45,8 +45,6 @@
     <Include ref='eefixed.xml'/>
     <Include ref='eealgo.xml'/>
     
-    <Include ref='ecalEndcapSens.xml'/>
-    <Include ref='ecalEndcapProdCuts.xml'/> 
   </IncludeSection>
   
   
