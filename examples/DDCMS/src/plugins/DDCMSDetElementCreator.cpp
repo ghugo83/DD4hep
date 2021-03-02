@@ -314,11 +314,16 @@ int DDCMSDetElementCreator::process(PlacedVolume pv, int level, bool recursive) 
         parent.element = createElement("Parent ", parent.pv, current_detector.id());
         ++counts.elements;
       }
-      printout(DEBUG,"DDCMSDetElementCreator",
+      /*printout(DEBUG,"DDCMSDetElementCreator",
                "++ Assign detector element: %s (%p, %ld children) to %s (%p) with %ld vols",
                data.element.name(), data.element.ptr(), data.element.children().size(),
                parent.element.name(), parent.element.ptr(),
-               data.vol_count);
+               data.vol_count);*/
+
+      /*printf("++ Assign detector element: %s (%p, %ld children) to %s (%p) with %ld vols \n",
+	     data.element.name(), data.element.ptr(), data.element.children().size(),
+	     parent.element.name(), parent.element.ptr(),
+	     data.vol_count);*/
 
       // Trickle up the tree only for sensitive pathes. Forget the passive rest
       // This should automatically omit non-sensitive pathes
