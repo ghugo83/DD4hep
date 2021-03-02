@@ -885,8 +885,8 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         // -- placed volumes were already added before in "handleAssembly"
         // -- imprint cannot be made, because this requires a logical volume as a mother
         //
-        printout(lvl, "Geant4Converter", "+++ Assembly: **** : dau:%s "
-                 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
+        printf("+++ Assembly: **** : dau:%s "
+                 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f \n",
                  vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz());
         return 0;
@@ -900,8 +900,8 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         // Imprint the assembly. The mother MUST already be transformed.
         //
 	transform.getDecomposition(scale, rot, trans);
-        printout(lvl, "Geant4Converter", "+++ Assembly: makeImprint: dau:%-12s %s in mother %-12s "
-                 "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
+        printf("+++ Assembly: makeImprint: dau:%-12s %s in mother %-12s "
+                 "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f \n",
                  node->GetName(), node_is_reflected ? "(REFLECTED)" : "",
 		 mot_vol ? mot_vol->GetName() : "<unknown>",
                  transform.dx(), transform.dy(), transform.dz(),
@@ -926,9 +926,8 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
                                                copy,      // its copy number
                                                checkOverlaps);
       transform.getDecomposition(scale, rot, trans);
-      printout(debugReflections ? ALWAYS : lvl, "Geant4Converter",
-	       "+++ Place %svolume %-12s in mother %-12s "
-	       "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f",
+      printf("+++ Place %svolume %-12s in mother %-12s "
+	       "Tr:x=%8.1f y=%8.1f z=%8.1f   Scale:x=%4.2f y=%4.2f z=%4.2f \n",
 	       node_is_reflected ? "REFLECTED " : "", _v.name(),
 	       mot_vol ? mot_vol->GetName() : "<unknown>",
 	       transform.dx(), transform.dy(), transform.dz(),
@@ -998,8 +997,8 @@ void* Geant4Converter::handlePlacement2(const std::pair<const TGeoNode*,const TG
         // -- placed volumes were already added before in "handleAssembly"
         // -- imprint cannot be made, because this requires a logical volume as a mother
         //
-        printout(lvl, "Geant4Converter", "+++ Assembly: **** : dau:%s "
-                 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
+        printf("+++ Assembly: **** : dau:%s "
+                 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f \n",
                  vol->GetName(), mot_vol->GetName(),
                  transform.dx(), transform.dy(), transform.dz());
         return 0;
