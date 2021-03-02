@@ -1,9 +1,21 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
+  <RotationSection label="trackerpixbar.xml">
+    <ReflectionRotation name="ReflectionY" phiY="270.*deg" thetaY="90.*deg" phiX=" 0.*deg" thetaX="90.*deg" phiZ="0.*deg" thetaZ="0.*deg"/>
+  </RotationSection>
+
+
   <SolidSection label="trackerpixbar.xml">
     <Box name="TestContainer" dx="10*mm" dy="10*mm" dz="10*mm"/>
     <Box name="TestChild" dx="2*mm" dy="2*mm" dz="2*mm"/>
+
+    <Box name="EEDee" dx="100*mm" dy="100*mm" dz="100*mm"/>
+    <Box name="EEFrontDee" dx="100*mm" dy="100*mm" dz="30*mm"/>
+    <Box name="EEBackDee" dx="100*mm" dy="100*mm" dz="30*mm"/>
+    <Box name="EEFrontQuad" dx="50*mm" dy="50*mm" dz="30*mm"/>
+    <Box name="EEBackQuad" dx="50*mm" dy="50*mm" dz="30*mm"/>
+
   </SolidSection>
 
 
@@ -16,8 +28,33 @@
       <rSolid name="TestChild"/>
       <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
     </LogicalPart>
+
+    <LogicalPart name="EEDee" category="unspecified">
+      <rSolid name="EEDee"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+    <LogicalPart name="EEFrontDee" category="unspecified">
+      <rSolid name="EEFrontDee"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+    <LogicalPart name="EEBackDee" category="unspecified">
+      <rSolid name="EEBackDee"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+    <LogicalPart name="EEFrontQuad" category="unspecified">
+      <rSolid name="EEFrontQuad"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+    <LogicalPart name="EEBackQuad" category="unspecified">
+      <rSolid name="EEBackQuad"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+
   </LogicalPartSection>
 
+
+
+ 
 
 
   <PosPartSection label="trackerpixbar.xml">
@@ -35,30 +72,86 @@
     </PosPart>
    
     <!-- TestContainer is placed in one mother. -->
+    <!--<PosPart copyNumber="1">
+	<rParent name="pixbar:PixelBarrel"/>
+	<rChild name="trackerpixbar:TestContainer"/>
+	</PosPart>-->
+
+    <!-- THIS LEADS TO AN ISSUE: TestContainer is placed in another mother OF DIFFERENT HIERARCHY LEVEL. -->
+    <!-- This wrongly results in one extra TestChild being added to TestContainer !!!!! -->
+    <!-- <PosPart copyNumber="1"> -->
+    <!-- 
+	 <rParent name="tob:TIBStiffener"/>
+    -->
+    <!-- If instead, the parent volume is tob:TOB (same hierarchy level as pixbar:PixelBarrel, then no issue: -->
+    <!-- TestContainer is properly made of 1 child only. -->
+    <!--    
+	 <rParent name="tob:TOB"/>
+	 <rChild name="trackerpixbar:TestContainer"/>
+	 </PosPart>
+    -->
+
+    <!-- THIS LEADS TO AN ISSUE: TestContainer is placed in another mother OF DIFFERENT HIERARCHY LEVEL. -->
+    <!-- This wrongly results in one extra TestChild being added to TestContainer !!!!! -->
+    <!--
+	<PosPart copyNumber="1">
+	<rParent name="pixbar:PixelBarrelSuppTub"/>
+    -->
+    <!-- If instead, the parent volume is tob:TOB (same hierarchy level as pixbar:PixelBarrel, then no issue: -->
+    <!-- TestContainer is properly made of 1 child only. -->
+    <!--<rParent name="tob:TOB"/>-->
+    <!--
+	<rChild name="trackerpixbar:TestContainer"/>
+	</PosPart>
+    -->
+
     <PosPart copyNumber="1">
       <rParent name="pixbar:PixelBarrel"/>
+      <rChild name="trackerpixbar:EEDee"/>
+    </PosPart>
+
+    <PosPart copyNumber="1">
+      <rParent name="trackerpixbar:EEDee"/>
+      <rChild name="trackerpixbar:EEFrontDee"/>
+      <Translation x="0*mm" y="0*mm" z="-20*mm"/>
+    </PosPart>
+    <PosPart copyNumber="1">
+      <rParent name="trackerpixbar:EEDee"/>
+      <rChild name="trackerpixbar:EEBackDee"/>
+      <Translation x="0*mm" y="0*mm" z="20*mm"/>
+    </PosPart>
+
+    <PosPart copyNumber="1">
+      <rParent name="trackerpixbar:EEFrontDee"/>
+      <rChild name="trackerpixbar:EEFrontQuad"/>
+    </PosPart>
+    <PosPart copyNumber="2">
+      <rParent name="trackerpixbar:EEFrontDee"/>
+      <rChild name="trackerpixbar:EEFrontQuad"/>
+      <rReflectionRotation name="trackerpixbar:ReflectionY"/>
+    </PosPart>
+    <PosPart copyNumber="1">
+      <rParent name="trackerpixbar:EEBackDee"/>
+      <rChild name="trackerpixbar:EEBackQuad"/>
+    </PosPart>
+    <PosPart copyNumber="2">
+      <rParent name="trackerpixbar:EEBackDee"/>
+      <rChild name="trackerpixbar:EEBackQuad"/>
+      <rReflectionRotation name="trackerpixbar:ReflectionY"/>
+    </PosPart>
+
+    <PosPart copyNumber="1">
+      <rParent name="trackerpixbar:EEFrontQuad"/>
+      <rChild name="trackerpixbar:TestContainer"/>
+    </PosPart>
+    <PosPart copyNumber="1">
+      <rParent name="trackerpixbar:EEBackQuad"/>
       <rChild name="trackerpixbar:TestContainer"/>
     </PosPart>
 
-    <!-- THIS LEADS TO AN ISSUE: TestContainer is placed in another mother OF DIFFERENT HIERARCHY LEVEL. -->
-    <!-- This wrongly results in one extra TestChild being added to TestContainer !!!!! -->
-    <PosPart copyNumber="1">
-      <rParent name="tob:TIBStiffener"/>
-      <!-- If instead, the parent volume is tob:TOB (same hierarchy level as pixbar:PixelBarrel, then no issue: -->
-      <!-- TestContainer is properly made of 1 child only. -->
-      <!--<rParent name="tob:TOB"/>-->
-      <rChild name="trackerpixbar:TestContainer"/>
-    </PosPart>
 
-    <!-- THIS LEADS TO AN ISSUE: TestContainer is placed in another mother OF DIFFERENT HIERARCHY LEVEL. -->
-    <!-- This wrongly results in one extra TestChild being added to TestContainer !!!!! -->
-    <PosPart copyNumber="1">
-      <rParent name="pixbar:PixelBarrelSuppTub"/>
-      <!-- If instead, the parent volume is tob:TOB (same hierarchy level as pixbar:PixelBarrel, then no issue: -->
-      <!-- TestContainer is properly made of 1 child only. -->
-      <!--<rParent name="tob:TOB"/>-->
-      <rChild name="trackerpixbar:TestContainer"/>
-    </PosPart>
+
+
 
   </PosPartSection>
 
