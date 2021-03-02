@@ -1,9 +1,68 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
- <PosPartSection label="trackerpixbar.xml">
-  <PosPart copyNumber="1">
-   <rParent name="tracker:Tracker"/>
-   <rChild name="pixbar:PixelBarrel"/>
-  </PosPart>
- </PosPartSection>
+
+  <SolidSection label="trackerpixbar.xml">
+    <Box name="TestContainer" dx="10*mm" dy="10*mm" dz="10*mm"/>
+    <Box name="TestChild" dx="2*mm" dy="2*mm" dz="2*mm"/>
+  </SolidSection>
+
+
+  <LogicalPartSection label="trackerpixbar.xml">
+    <LogicalPart name="TestContainer" category="unspecified">
+      <rSolid name="TestContainer"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
+    <LogicalPart name="TestChild" category="unspecified">
+      <rSolid name="TestChild"/>
+      <rMaterial name="trackermaterial:T_CarbonFibreStr"/>
+    </LogicalPart>
+  </LogicalPartSection>
+
+
+
+  <PosPartSection label="trackerpixbar.xml">
+
+    <!-- Off-topic: this was already there, obviously untouched -->
+    <PosPart copyNumber="1">
+      <rParent name="tracker:Tracker"/>
+      <rChild name="pixbar:PixelBarrel"/>
+    </PosPart>
+
+    <!-- TestContainer contains ONE child!! -->
+    <PosPart copyNumber="1">
+      <rParent name="trackerpixbar:TestContainer"/>
+      <rChild name="trackerpixbar:TestChild"/>
+    </PosPart>
+   
+    <!-- TestContainer is placed in one mother. -->
+    <PosPart copyNumber="1">
+      <rParent name="pixbar:PixelBarrel"/>
+      <rChild name="trackerpixbar:TestContainer"/>
+    </PosPart>
+
+    <!-- THIS LEADS TO AN ISSUE: TestContainer is placed in another mother OF DIFFERENT HIERARCHY LEVEL. -->
+    <!-- This wrongly results in one extra TestChild being added to TestContainer !!!!! -->
+    <PosPart copyNumber="1">
+      <rParent name="tob:TIBStiffener"/>
+      <!-- If instead, the parent volume is tob:TOB (same hierarchy level as pixbar:PixelBarrel, then no issue: -->
+      <!-- TestContainer is properly made of 1 child only. -->
+      <!--<rParent name="tob:TOB"/>-->
+      <rChild name="trackerpixbar:TestContainer"/>
+    </PosPart>
+
+    <!-- THIS LEADS TO AN ISSUE: TestContainer is placed in another mother OF DIFFERENT HIERARCHY LEVEL. -->
+    <!-- This wrongly results in one extra TestChild being added to TestContainer !!!!! -->
+    <PosPart copyNumber="1">
+      <rParent name="pixbar:PixelBarrelSuppTub"/>
+      <!-- If instead, the parent volume is tob:TOB (same hierarchy level as pixbar:PixelBarrel, then no issue: -->
+      <!-- TestContainer is properly made of 1 child only. -->
+      <!--<rParent name="tob:TOB"/>-->
+      <rChild name="trackerpixbar:TestContainer"/>
+    </PosPart>
+
+  </PosPartSection>
+
+
+
+
 </DDDefinition>
